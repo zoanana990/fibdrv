@@ -3,11 +3,12 @@ TARGET_MODULE := fibdrv
 
 obj-m := $(TARGET_MODULE).o
 ccflags-y := -std=gnu99 -Wno-declaration-after-statement
+$(TARGET_MODULE)-objs := fib.o fibstr.o
 
 KDIR := /lib/modules/$(shell uname -r)/build
 PWD := $(shell pwd)
 
-GIT_HOOKS := .git/hooks/applied
+GIT_HOOKS := .git/hooks/appliedss
 
 all: $(GIT_HOOKS) client
 	$(MAKE) -C $(KDIR) M=$(PWD) modules
@@ -36,6 +37,7 @@ check: all
 	$(MAKE) unload
 	$(MAKE) load
 	sudo ./client > out
+	gnuplot plot.gp
 	$(MAKE) unload
 	@diff -u out scripts/expected.txt && $(call pass)
 	@scripts/verify.py
